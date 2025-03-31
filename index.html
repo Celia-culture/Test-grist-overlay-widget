@@ -1,17 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>onRecord</title>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Grist Overlay Trigger</title>
     <script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
-  </head>
-  <body>
-    <pre id="readout">Waiting for data...</pre>
+</head>
+<body>
+    <h2>Widget Grist</h2>
+    <pre id="data-output">En attente des données...</pre>
+
     <script>
-      grist.ready();
-      grist.onRecord(function(record) {
-        document.getElementById('readout').innerHTML = JSON.stringify(record, null, 2);
-      });
-    <script src="script.js"></script>
-  </body>
+        grist.ready(); // Signaler que le widget est prêt
+
+        const TRIGGER_WORD = "alerte";
+        const TARGET_COLUMN = "Status";
+
+        function showOverlay() {
+            let overlay = document.createElement("div");
+            overlay.style.position = "fixed";
+            overlay.style.top = "0";
+            overlay.style.left = "0";
+            overlay.style.width = "100vw";
+            overlay.style.height = "100vh";
+            overlay.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+            overlay.style.display = "flex";
+            overlay.style.justifyContent = "center";
+            overlay.style.alignItems = "center";
+            overlay.style.color = "white";
+            overlay.style.fontSize = "24px";
+            overlay.style.zIndex = "100000";
+            overlay.innerText = "⚠ Attention : Mot-clé détecté !";
+
+            document.body.appendChild(overlay);
+            setTimeout(() => document.body.removeChild(overlay), 3000);
+        }
+
+        // Écoute les mises à jour du tableau
+        grist.onRecords((data) => {
+            document.getElementById("data-output").textContent = JSON.stringify(data, null, 2);
+
+            for (let record of data.records) {
+                if (record[TARGET_COLUMN] && record[TARGET_COLUMN].toLowerCase() === TRIGGER_WORD) {
+                    showOverlay();
+                    break;
+                }
+            }
+        });
+    </script>
+</body>
 </html>
