@@ -1,11 +1,12 @@
 window.grist = window.grist || {};
-window.grist.ready();
+window.grist.ready({ requiredAccess: 'full' });
+window.grist.onRecords(function(records) {});
 
 window.addEventListener("message", function(event) {
     if (event.data && event.data.table && event.data.table.records) {
         const records = event.data.table.records;
-        const TRIGGER_WORD = "alerte";
-        const TARGET_COLUMN = "Status";
+        const TRIGGER_WORD = "tomates";
+        const TARGET_COLUMN = "BLABLA";
 
         for (let record of records) {
             if (record[TARGET_COLUMN] && record[TARGET_COLUMN].toLowerCase() === TRIGGER_WORD) {
